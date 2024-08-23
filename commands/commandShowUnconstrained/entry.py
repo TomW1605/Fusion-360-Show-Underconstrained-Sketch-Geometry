@@ -77,5 +77,12 @@ def stop():
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     # General logging for debug.
     # futil.log(f'{CMD_NAME} Command Created Event')
-    futil.log(app.executeTextCommand(u'Sketch.ShowUnderconstrained'), adsk.core.LogLevels.InfoLogLevel)
-    # app.executeTextCommand(u'Sketch.ShowUnderconstrained')
+    try:
+        futil.log(app.executeTextCommand(u'Sketch.ShowUnderconstrained'))
+    except Exception as ex:
+        # print(ex)
+        if isinstance(ex, RuntimeError) and "No active sketch exists" in ex.args[0]:
+                futil.log("No active sketch exists")
+        else:
+            if ui:
+                ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
